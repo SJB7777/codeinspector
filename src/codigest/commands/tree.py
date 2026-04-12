@@ -11,7 +11,6 @@ app = typer.Typer()
 console = Console()
 
 def _build_rich_tree(root_path: Path, files: list[Path]) -> Tree:
-    # (기존의 이모티콘 없는 버전 로직 유지)
     tree = Tree(f"[bold blue]{root_path.name}[/bold blue]", guide_style="bold bright_black")
     dir_nodes = {root_path: tree}
 
@@ -69,7 +68,7 @@ def handle(
         # [수정] targets=[target]을 명시적으로 전달해야 해당 폴더만 스캔함
         files = ctx.get_target_files(targets=[target], ignore_config=all, resolve_deps=resolve)
     except Exception as e:
-        console.print(f"[red][Error] Scan failed:[/red] {e}")
+        console.print(f"[red][Error] dump failed:[/red] {e}")
         raise typer.Exit(code=1)
 
     if not files:

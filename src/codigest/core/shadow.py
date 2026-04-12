@@ -100,7 +100,7 @@ class ContextAnchor:
 
         self._run_git(["add", "."])
         if self._run_git(["diff-index", "--quiet", "HEAD", "--"], check=False) != "":
-            self._run_git(["commit", "-m", f"Snapshot: {int(time.time())}"])
+            self._run_git(["commit", "-m", f"dump: {int(time.time())}"])
             logger.info("Context anchor updated.")
 
     def get_changes(self, current_files: list[Path]) -> str:

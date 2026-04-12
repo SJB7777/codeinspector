@@ -18,7 +18,7 @@ extensions = [
     ".py", ".pyi",
     ".ts", ".tsx", ".js", ".jsx",
     ".json", ".html", ".css",
-    ".md", ".toml", ".yaml", ".yml", ".xml"
+    ".md", ".toml", ".yaml", ".yml", ".txt"
 ]
 exclude_patterns = [
     "*.lock",
@@ -74,11 +74,11 @@ def handle(
     #    "프로그램 시작 시에도 Anchor 하나 잡고 시작"
     console.print("\n[dim]Creating initial context anchor...[/dim]")
     try:
-        # Default scan settings for initialization
+        # Default dump settings for initialization
         files = scanner.scan_project(root_path) 
         anchor = shadow.ContextAnchor(root_path)
         anchor.update(files)
-        console.print("  [green]✔[/green] Baseline snapshot captured.")
+        console.print("  [green]✔[/green] Baseline dump captured.")
     except Exception as e:
         console.print(f"  [red]⚠️ Failed to create initial anchor: {e}[/red]")
 

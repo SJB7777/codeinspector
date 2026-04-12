@@ -13,7 +13,7 @@ console = Console()
 def handle(
     target: Path = typer.Argument(Path.cwd(), help="Target directory"),
     copy: bool = typer.Option(True, help="Auto-copy to clipboard"),
-    save: bool = typer.Option(True, help="Save to .codigest/digest.xml"),
+    save: bool = typer.Option(True, help="Save to .codigest/digest.txt"),
     message: str = typer.Option("", "--message", "-m", help="Add specific instruction"),
     # [추가]
     resolve: bool = typer.Option(False, "-r", "--resolve", help="Recursively resolve imports"),
@@ -83,7 +83,7 @@ def handle(
         console.print("[dim]📋 Copied to clipboard[/dim]")
     
     if save:
-        out_path = root_path / ".codigest" / "digest.xml"
+        out_path = root_path / ".codigest" / "digest.txt"
         out_path.parent.mkdir(exist_ok=True)
         out_path.write_text(digest_content, encoding="utf-8")
         console.print(f"[dim]💾 Saved to {out_path}[/dim]")

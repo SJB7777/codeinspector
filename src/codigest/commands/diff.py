@@ -20,13 +20,13 @@ def handle(
         resolve_path=True
     ),
     copy: bool = typer.Option(True, help="Auto-copy to clipboard"),
-    save: bool = typer.Option(True, help="Save to .codigest/changes.diff"),
+    save: bool = typer.Option(True, help="Save to .codigest/diff.txt"),
     message: str = typer.Option("", "--message", "-m", help="Add specific instruction context"),
     # [추가] resolve 옵션
     resolve: bool = typer.Option(False, "-r", "--resolve", help="Recursively resolve imports"),
 ):
     """
-    [Context Update] Shows changes since the last 'codigest scan'.
+    [Context Update] Shows changes since the last 'codigest dump'.
     Useful for updating LLM context without re-uploading everything.
     """
     # [1] Context Setup
@@ -38,11 +38,11 @@ def handle(
     # Check Baseline
     last_update = anchor.get_last_update_time()
     if last_update == "Never":
-        console.print("[yellow]⚠️  No scan history found.[/yellow]")
-        console.print("   Run [bold cyan]cdg scan[/bold cyan] first to establish a baseline.")
+        console.print("[yellow]⚠️  No dump history found.[/yellow]")
+        console.print("   Run [bold cyan]cdg dump[/bold cyan] first to establish a baseline.")
         raise typer.Exit(1)
 
-    console.print(f"[dim]Checking changes since last scan ({last_update})...[/dim]")
+    console.print(f"[dim]Checking changes since last dump ({last_update})...[/dim]")
 
     # [2] Calculate Diff via Context
     with Progress(
@@ -62,7 +62,7 @@ def handle(
         progress.update(task, completed=100)
 
     if not diff_content.strip():
-        console.print("[green]No changes detected since last scan.[/green]")
+        console.print("[green]No changes detected since last dump.[/green]")
         return
 
     # [3] Render
@@ -71,7 +71,7 @@ def handle(
         formatted_diff = prompt_engine.render(
             "diff",
             project_name=root_path.name,
-            context_message=f"Changes since last scan ({last_update})",
+            context_message=f"Changes since last dump ({last_update})",
             diff_content=diff_content,
             instruction=message
         )
@@ -88,7 +88,7 @@ def handle(
         console.print("[dim]Clipboard copied[/dim]")
 
     if save:
-        out_path = root_path / ".codigest" / "changes.diff"
+        out_path = root_path / ".codigest" / "diff.txt"
         out_path.parent.mkdir(exist_ok=True)
         out_path.write_text(formatted_diff, encoding="utf-8")
         console.print(f"[dim]Saved to {out_path}[/dim]")

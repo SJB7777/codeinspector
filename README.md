@@ -63,35 +63,35 @@ Sets up the `.codigest` directory and captures the initial baseline anchor.
 cdg init
 ```
 
-### 2. Full Context Snapshot (`scan`)
+### 2. Full Context dump (`dump`)
 
-Scans the codebase and generates a structured XML snapshot. Includes a **Pre-flight Check** to prevent accidental token overflow.
+Scans the codebase and generates a structured XML dump. Includes a **Pre-flight Check** to prevent accidental token overflow.
 
-* **Output:** `.codigest/snapshot.xml`
+* **Output:** `.codigest/dump.txt`
 * **Features:**
 * **Smart Confirmation:** Automatically skips confirmation for small contexts, but warns you for large ones (>30k tokens).
 * **Dependency Resolution (`-r`):** Automatically finds and includes local files imported by your target files.
-* **Scope Control:** You can specify folders or files to scan.
+* **Scope Control:** You can specify folders or files to dump.
 
 
 
 ```bash
-# Basic scan (Interactive confirmation if large)
-cdg scan
+# Basic dump (Interactive confirmation if large)
+cdg dump
 
-# Scan specific folder with dependency resolution (Smart Context)
-cdg scan src/main.py -r
+# dump specific folder with dependency resolution (Smart Context)
+cdg dump src/main.py -r
 
 # Force execution without confirmation (Good for CI/CD)
-cdg scan -y --message "Automated snapshot"
+cdg dump -y --message "Automated dump"
 ```
 
 ### 3. Incremental Changes (`diff`)
 
-Tracks text-based changes between the last `scan` and the current working tree.
+Tracks text-based changes between the last `dump` and the current working tree.
 
-* **Output:** `.codigest/changes.diff`
-* **Use Case:** "I modified 3 files. Here is exactly what changed since the last snapshot."
+* **Output:** `.codigest/diff.txt`
+* **Use Case:** "I modified 3 files. Here is exactly what changed since the last dump."
 * **Note:** Checks against the internal Shadow Git, enabling tracking without committing to the real Git.
 
 ```bash
@@ -102,7 +102,7 @@ cdg diff
 
 Analyzes **structural changes** (AST-based) rather than line-by-line text differences.
 
-* **Output:** `.codigest/semdiff.xml`
+* **Output:** `.codigest/semdiff.txt`
 * **Use Case:** "I refactored the API. Show me added/removed functions or signature changes."
 * **Benefit:** Reduces token usage by ignoring formatting/comment changes.
 
@@ -125,7 +125,7 @@ cdg tree
 
 Generates a high-level outline of the project structure (Classes, Functions, Methods only).
 
-* **Output:** `.codigest/digest.xml`
+* **Output:** `.codigest/digest.txt`
 * **Use Case:** "Don't read the implementation details. Just understand the class hierarchy."
 
 ```bash
@@ -160,7 +160,7 @@ format = "xml"
 Codigest maintains a hidden, lightweight Git repository inside `.codigest/anchor/.shadow_git`.
 
 * It is renamed to `.shadow_git` to prevent VS Code and other IDEs from confusing it with your project's actual repository.
-* When you run `scan`, the current state is committed to this anchor.
+* When you run `dump`, the current state is committed to this anchor.
 * When you run `diff`, the tool compares your working directory against this anchor.
 
 **Safety Mechanisms**

@@ -39,7 +39,7 @@ dmypy.json
 .pytest_cache/
 .coverage
 htmlcov/
-coverage.xml
+coverage.txt
 *.cover
 
 # Log files
@@ -78,9 +78,9 @@ coverage.xml
 .codigest/
 
 # Default output filenames (if generated in root)
-snapshot.xml
-digest.xml
-changes.diff
+dump.txt
+digest.txt
+diff.txt
 tree.txt
 
 # Temporary test outputs

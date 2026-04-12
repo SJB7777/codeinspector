@@ -10,7 +10,7 @@ from . import tags
 # RenderFunction takes keyword arguments and returns a processed string
 RenderFunc = Callable[..., str]
 
-# 1. Snapshot Template (codigest scan)
+# 1. dump Template (codigest dump)
 def _default_snapshot(project_name: str, tree_structure: str, source_code: str, instruction: str = "") -> str:
     instruction_block = ""
     if instruction:
@@ -123,7 +123,7 @@ Use this to understand the project structure and relationships.
 # Registry of default implementations
 # Ensure ALL keys correspond to prompt_engine.render calls
 DEFAULT_RENDERERS: dict[str, RenderFunc] = {
-    "snapshot": _default_snapshot,
+    "dump": _default_snapshot,
     "diff": _default_diff,
     "semdiff": _default_semdiff,
     "digest": _default_digest,

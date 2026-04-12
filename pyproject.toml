@@ -13,6 +13,7 @@ dependencies = [
     "pathspec",
     "pyperclip",
     "tomli-w",
+    "pydantic>=2.12.5",
 ]
 
 classifiers = [

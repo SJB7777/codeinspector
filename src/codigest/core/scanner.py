@@ -76,7 +76,7 @@ class ProjectScanner:
                 continue
         return False
 
-    def scan(self) -> list[Path]:
+    def dump(self) -> list[Path]:
         """
         Walks the directory tree and returns valid files.
         (Modernized from old core.py's stack-based approach)
@@ -128,4 +128,4 @@ def scan_project(
     include_paths: list[Path] | None = None
 ) -> list[Path]:
     scanner = ProjectScanner(root_path, extensions, extra_ignores, include_paths)
-    return scanner.scan()
+    return scanner.dump()

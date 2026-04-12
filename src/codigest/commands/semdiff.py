@@ -13,7 +13,7 @@ console = Console()
 def handle(
     target: Path = typer.Argument(Path.cwd(), help="Target directory"),
     copy: bool = typer.Option(True, help="Auto-copy to clipboard"),
-    save: bool = typer.Option(True, help="Save to .codigest/semdiff.xml"),
+    save: bool = typer.Option(True, help="Save to .codigest/semdiff.txt"),
     message: str = typer.Option("", "--message", "-m", help="Add specific instruction"),
     # [추가] resolve 옵션
     resolve: bool = typer.Option(False, "-r", "--resolve", help="Recursively resolve imports"),
@@ -30,7 +30,7 @@ def handle(
 
     last_update = anchor.get_last_update_time()
     if last_update == "Never":
-        console.print("[yellow]⚠️  No scan history found. Run [bold]cdg scan[/bold] first.[/yellow]")
+        console.print("[yellow]⚠️  No dump history found. Run [bold]cdg dump[/bold] first.[/yellow]")
         raise typer.Exit(1)
 
     console.print(f"[dim]Analyzing structural changes since ({last_update})...[/dim]")
@@ -135,7 +135,7 @@ def handle(
         console.print("[dim]Clipboard copied[/dim]")
     
     if save:
-        out_path = root_path / ".codigest" / "semdiff.xml"
+        out_path = root_path / ".codigest" / "semdiff.txt"
         out_path.parent.mkdir(exist_ok=True)
         out_path.write_text(final_output, encoding="utf-8")
         console.print(f"[dim]Saved to {out_path}[/dim]")

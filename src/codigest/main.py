@@ -6,11 +6,11 @@ import typer
 from rich.console import Console
 from importlib.metadata import version, PackageNotFoundError
 
-from .commands import init, scan, tree, digest, diff, semdiff
+from .commands import init, dump, tree, digest, diff, semdiff
 
-console = Console()
+console: Console = Console()
 
-app = typer.Typer(
+app: typer.Typer = typer.Typer(
     name="codigest",
     help="Semantic Context Manager for LLM-assisted Development",
     add_completion=False,
@@ -18,7 +18,7 @@ app = typer.Typer(
 )
 
 app.add_typer(init.app, name="init")
-app.add_typer(scan.app, name="scan")
+app.add_typer(dump.app, name="dump")
 app.add_typer(tree.app, name="tree")
 app.add_typer(digest.app, name="digest")
 app.add_typer(diff.app, name="diff")

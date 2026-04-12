@@ -1,5 +1,6 @@
-import typer
 from pathlib import Path
+
+import typer
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.panel import Panel
@@ -7,18 +8,18 @@ from rich.filesize import decimal
 
 from ..core import structure, tags, prompts, processor, shadow, tokenizer, common
 
-app = typer.Typer()
-console = Console()
+app: typer.Typer = typer.Typer()
+console: Console = Console()
 
 @app.callback(invoke_without_command=True)
 def handle(
     targets: list[Path] = typer.Argument(
         None, 
-        help="Specific files or directories to scan (Scope)",
+        help="Specific files or directories to dump (Scope)",
         exists=True,
         resolve_path=True
     ),
-    output: str = typer.Option("snapshot.xml", help="Output filename inside .codigest/"),
+    output: str = typer.Option("dump.txt", help="Output filename inside .codigest/"),
     all: bool = typer.Option(False, "--all", "-a", help="Ignore config filters"),
     message: str = typer.Option("", "--message", "-m", help="Add specific instruction"),
     line_numbers: bool = typer.Option(False, "--lines", "-l", help="Add line numbers to code blocks"),
@@ -30,8 +31,8 @@ def handle(
     If TARGETS provided, only scans those paths within the project.
     """
     # [1] Context Setup (Centralized)
-    ctx = common.get_context(targets)
-    root_path = ctx.root_path
+    ctx: common.ProjectContext = common.ProjectContext(targets)
+    root_path: Path = ctx.root_path
 
     # Init check
     artifact_dir = root_path / ".codigest"
@@ -43,9 +44,9 @@ def handle(
             console.print(f"[red][Error] Cannot create .codigest at {root_path}[/red]")
             raise typer.Exit(1)
 
-    output_path = artifact_dir / output
-    prompt_engine = prompts.get_engine(root_path)
-    anchor = shadow.ContextAnchor(root_path)
+    output_path: Path = artifact_dir / output
+    prompt_engine: prompts.PromptEngine = prompts.PromptEngine(root_path)
+    anchor: shadow.ContextAnchor = shadow.ContextAnchor(root_path)
 
     # [2] File Discovery via Context
     with Progress(
@@ -57,7 +58,7 @@ def handle(
         task = progress.add_task("scanning", total=None)
         
         # ★ All logic delegated to common.py
-        files = ctx.get_target_files(
+        files: list[Path] = ctx.get_target_files(
             targets=targets, 
             ignore_config=all, 
             resolve_deps=resolve
@@ -70,7 +71,7 @@ def handle(
     total_size = sum(f.stat().st_size for f in files)
     est_tokens = int(total_size / 4) 
 
-    console.print(Panel(f"""[bold]Scan Plan[/bold]
+    console.print(Panel(f"""[bold]dump Plan[/bold]
   Target: [cyan]{root_path}[/cyan]
   Scope: {total_files} files
   Est. Size: {decimal(total_size)}
@@ -93,7 +94,7 @@ def handle(
     # [4] Execution
     with Progress(
         SpinnerColumn(),
-        TextColumn("[bold blue]Generating Snapshot...[/bold blue]"),
+        TextColumn("[bold blue]Generating dump...[/bold blue]"),
         transient=True,
         console=console
     ) as progress:
@@ -127,7 +128,7 @@ def handle(
 
         try:
             snapshot_content = prompt_engine.render(
-                "snapshot",
+                "dump",
                 project_name=root_path.name,
                 tree_structure=tree_str,
                 source_code=source_code_blob,
@@ -146,14 +147,14 @@ def handle(
         output_path.write_text(snapshot_content, encoding="utf-8")
         final_token_count = tokenizer.estimate_tokens(snapshot_content)
 
-        console.print("[bold green]Snapshot Saved![/bold green]")
+        console.print("[bold green]dump Saved![/bold green]")
         console.print(f"  Path: [underline]{output_path}[/underline]")
         console.print(f"  Final Tokens: [bold cyan]~{final_token_count:,}[/bold cyan]")
         
         if anchor.has_history():
             pre_diff_path = artifact_dir / "previous_changes.diff"
             if pre_diff_path.exists() and pre_diff_path.stat().st_size > 0:
-                console.print(f"  [dim]Changes before this scan saved to: {pre_diff_path.name}[/dim]")
+                console.print(f"  [dim]Changes before this dump saved to: {pre_diff_path.name}[/dim]")
 
     except Exception as e:
         console.print(f"[bold red][Error] Save Failed:[/bold red] {e}")
